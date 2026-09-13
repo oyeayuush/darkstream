@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DarkStream</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <nav>
+    <a class="logo" href="{{ url_for('home') }}">Dark<span>Stream</span></a>
+    <span class="tagline">Your private local video library</span>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">LOCAL VIDEO LIBRARY</p>
+      <h1>Your videos, in one place.</h1>
+      <p>Upload a video from this computer and play it right in your browser.</p>
+    </section>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="notice" role="status">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <section class="upload-box" aria-labelledby="upload-heading">
+      <h2 id="upload-heading">Add a video</h2>
+      <form method="post" action="{{ url_for('upload_video') }}" enctype="multipart/form-data">
+        <label>
+          Video title
+          <input type="text" name="title" maxlength="100" placeholder="For example: Summer trip" required>
+        </label>
+        <label>
+          Video file
+          <input type="file" name="video" accept=".mp4,.webm,.mov,.avi,.mkv,video/*" required>
+          <small>MP4, WebM, MOV, AVI, or MKV · maximum 500 MB</small>
+        </label>
+        <button type="submit">Upload video</button>
+      </form>
+    </section>
+
+    {% if videos %}
+      <section class="video-grid" aria-label="Your videos">
+        {% for video in videos %}
+          <article class="video-card">
+            <video controls preload="metadata">
+              <source src="{{ url_for('uploaded_video', filename=video.filename) }}">
+              Your browser does not support video playback.
+            </video>
+            <div class="video-info">
+              <h2>{{ video.title }}</h2>
+              <p>Uploaded {{ video.uploaded_at }}</p>
+              <form method="post" action="{{ url_for('delete_video', video_id=video.id) }}" onsubmit="return confirm('Delete this video?');">
+                <button class="delete" type="submit">Delete</button>
+              </form>
+            </div>
+          </article>
+        {% endfor %}
+      </section>
+    {% else %}
+      <section class="empty">
+        <h2>No videos yet</h2>
+        <p>Use the form above to add your first video.</p>
+      </section>
+    {% endif %}
+  </main>
+
+  <footer>DarkStream runs only on your computer unless you choose to deploy it.</footer>
+</body>
+</html>

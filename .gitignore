@@ -1,0 +1,6 @@
+# Local videos and their local database should not be published with the source code.
+uploads/
+videos.db
+__pycache__/
+*.py[cod]
+.env
